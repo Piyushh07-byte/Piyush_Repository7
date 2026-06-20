@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Payment - Student Doubt Assistant</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+  }
+  .card {
+    background: #fff;
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+  }
+  .card h1 {
+    font-size: 20px;
+    margin: 0 0 4px;
+    color: #1f2937;
+  }
+  .greeting {
+    color: #6b7280;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .amount {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 10px 0 4px;
+  }
+  .plan-label {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-bottom: 20px;
+  }
+  #qrcode {
+    display: flex;
+    justify-content: center;
+    margin: 15px 0 10px;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 10px;
+    border: 1px dashed #d1d5db;
+  }
+  .scan-hint {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-bottom: 22px;
+  }
+  button {
+    width: 100%;
+    padding: 13px;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover { background: #15803d; }
+  button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+  }
+  .demo-tag {
+    margin-top: 14px;
+    font-size: 11px;
+    color: #b91c1c;
+    background: #fee2e2;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Complete Your Subscription</h1>
+    <div class="greeting" id="greeting">Loading...</div>
+
+    <div class="amount">₹99</div>
+    <div class="plan-label">Monthly Plan &middot; Unlimited Doubt Solving</div>
+
+    <div id="qrcode"></div>
+    <div class="scan-hint">Scan the QR with any UPI app to pay</div>
+
+    <button id="paidBtn">I've Paid ✅</button>
+    <div class="demo-tag">DEMO MODE — no real payment processed</div>
+  </div>
+
+  <script>
+    // Make sure user logged in first
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!user) {
+      window.location.href = 'login.html';
+    } else {
+      document.getElementById('greeting').innerText = 'Hi ' + user.name + ', one step left!';
+    }
+
+    // Generate dummy QR code (encodes a fake UPI-style string)
+    new QRCode(document.getElementById("qrcode"), {
+      text: "upi://pay?pa=demo@upi&pn=StudentDoubtAssistant&am=99&cu=INR&tn=demo-txn-" + Date.now(),
+      width: 160,
+      height: 160
+    });
+
+    // Fake payment confirmation
+    document.getElementById('paidBtn').addEventListener('click', function () {
+      const btn = this;
+      btn.disabled = true;
+      btn.innerText = 'Verifying payment...';
+
+      setTimeout(function () {
+        const user = JSON.parse(localStorage.getItem('user'));
+        user.paid = true;
+        user.paidAt = new Date().toISOString();
+        localStorage.setItem('user', JSON.stringify(user));
+
+        // Redirect into your existing chatbot
+        window.location.href = 'vidyaabot.html';
+      }, 1500);
+    });
+  </script>
+
+</body>
+</html>
